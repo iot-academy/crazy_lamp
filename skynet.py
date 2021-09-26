@@ -23,7 +23,6 @@ time_left = seconds
 def on_connect(mqttc, obj, flags, rc):
     print("Connected to: " + MQTTSRV + ":" + str(MQTTPRT))
 
-
 def on_message_srv(mqttc, obj, msg):
     global infected
     topics = msg.topic.split("/")
@@ -41,14 +40,14 @@ def on_message_srv(mqttc, obj, msg):
                 if data.upper() == key:
                     status += 1
         if status == len(server_names):
-            print("Device " + dev + " in safety!")
+            print("\033[32mDevice " + dev + " in safety!\033[0m")
             infected.pop(dev, None)
 
 def on_message_init(mosq, obj, msg):
     global infected
     topics = msg.topic.split("/")
     dev = topics[1]
-    print("Device " + dev + " infected!")
+    print("\033[31mDevice " + dev + " infected!\033[0m")
     infected[dev] = servers.copy()
 
 def on_log(mqttc, obj, level, string):
