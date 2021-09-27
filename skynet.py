@@ -83,12 +83,13 @@ def attack():
         time.sleep(1)
 
 thread = Thread(target = attack, args = ())
+thread.daemon = True
+thread.start()
 mqttc = mqtt.Client()
 mqttc.message_callback_add(MQTTBAS + "/+/lamp/init", on_message_init)
 mqttc.message_callback_add(MQTTBAS + "/+/servers/#", on_message_srv)
 mqttc.on_connect = on_connect
 mqttc.username_pw_set(MQTTUSR, MQTTPWD)
 mqttc.connect(MQTTSRV, MQTTPRT, 60)
-thread.start()
 mqttc.subscribe(MQTTBAS + "/#", 0)
 mqttc.loop_forever()
