@@ -7,10 +7,14 @@ MQTTUSR = "MQTT_LOGIN"
 MQTTPWD = "MQTT_PASSWORD"
 MQTTBAS = "iot_practice"
 server_names = ("aws", "oracle", "azure", "thingworx", "cisco", "watson", "thethingsnetwork", "ibmcloud")
-dev = "5404"
+dev = "0000"
 
 import hashlib
 import paho.mqtt.client as mqtt
+import sys
+
+if len(sys.argv) > 1:
+    dev = sys.argv[1]
 
 def on_connect(mqttc, obj, flags, rc):
     print("rc: " + str(rc))
