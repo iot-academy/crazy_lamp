@@ -12,6 +12,7 @@ dev = "0000"
 import hashlib
 import paho.mqtt.client as mqtt
 import sys
+import time
 
 if len(sys.argv) > 1:
     dev = sys.argv[1]
@@ -45,6 +46,7 @@ def main():
         payload = hashlib.md5((srv + ":" + dev).encode('utf-8')).hexdigest().upper()[0:6]
         print(topic + ": " + payload)
         mqttc.publish(topic, payload)
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     ret = main()
