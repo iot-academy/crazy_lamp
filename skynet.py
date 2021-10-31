@@ -55,6 +55,17 @@ def on_message_init(mosq, obj, msg):
     print("\033[31mDevice " + dev + " infected!\033[0m")
     infected[dev] = servers.copy()
 
+def on_message_i_am(mosq, obj, msg):
+    global infected
+    topics = msg.topic.split("/")
+    dev = topics[1]
+    if str(msg.payload.decode('utf-8')) == "guru":
+        print("\033[31mDevice " + dev + " infected!\033[0m")
+        infected[dev] = servers.copy()
+    if str(msg.payload.decode('utf-8')) == "weakling" and dev in infected:
+        print("\033[31mYou're a weakling! \033[32mDevice " + dev + " in safety!\033[0m")
+        infected.pop(dev, None)
+
 def on_log(mqttc, obj, level, string):
     print(string)
 
@@ -97,7 +108,8 @@ def attack():
 thread = Thread(target = attack, args = ())
 thread.daemon = True
 mqttc = mqtt.Client()
-mqttc.message_callback_add(MQTTBAS + "/+/lamp/init", on_message_init)
+#mqttc.message_callback_add(MQTTBAS + "/+/lamp/init", on_message_init)
+mqttc.message_callback_add(MQTTBAS + "/+/i_am", on_message_i_am)
 mqttc.message_callback_add(MQTTBAS + "/+/servers/#", on_message_srv)
 mqttc.on_connect = on_connect
 mqttc.username_pw_set(MQTTUSR, MQTTPWD)
