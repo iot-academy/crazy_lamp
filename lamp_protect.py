@@ -6,7 +6,7 @@ MQTTPRT = 1883
 MQTTUSR = "MQTT_LOGIN"
 MQTTPWD = "MQTT_PASSWORD"
 MQTTBAS = "iot_practice"
-server_names = ("aws", "oracle", "azure", "thingworx", "cisco", "watson", "thethingsnetwork", "ibmcloud")
+server_names = ("aws", "oracle", "azure", "thingworx", "cisco", "watson", "thethingsnetwork", "ibmcloud", "yandex")
 dev = "0000"
 
 import hashlib
