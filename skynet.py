@@ -5,6 +5,8 @@ import paho.mqtt.client as mqtt
 import time
 from threading import Thread
 import random
+from termcolor import colored
+import colorama
 
 
 MQTTSRV = "SERVER"
@@ -15,7 +17,7 @@ MQTTBAS = "iot_practice"
 seconds = 5
 server_names = ("aws", "oracle", "azure", "thingworx", "cisco", "watson", "thethingsnetwork", "ibmcloud")
 
-
+colorama.init()
 infected = dict()
 servers = dict.fromkeys(server_names)
 time_left = seconds
